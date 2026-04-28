@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block login_content %}
+<div style="height: 100vh; display: flex; flex-direction: column; justify-content: center; padding: 40px; background: var(--bg);">
+    <div style="text-align: center; margin-bottom: 50px;">
+        <div style="width: 80px; height: 80px; background: var(--primary); border-radius: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 2.5rem; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);">
+            <i class="fas fa-fingerprint"></i>
+        </div>
+        <h1 style="font-size: 2rem;">AbsenGo</h1>
+        <p style="color: var(--text-dim);">Silakan login untuk melanjutkan</p>
+    </div>
+
+    <form method="post" class="card" style="padding: 30px;">
+        {% csrf_token %}
+        <div style="margin-bottom: 20px;">
+            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim);">Username</label>
+            <input type="text" name="username" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white;" required>
+        </div>
+        <div style="margin-bottom: 30px;">
+            <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim);">Password</label>
+            <input type="password" name="password" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white;" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+    <p style="text-align: center; margin-top: 30px; color: var(--text-dim); font-size: 0.9rem;">
+        Belum punya akun? <a href="{% url 'register' %}" style="color: var(--primary); text-decoration: none; font-weight: 600;">Daftar di sini</a>
+    </p>
+</div>
+{% endblock %}

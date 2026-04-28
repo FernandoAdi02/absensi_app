@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block extra_css %}
+<style>
+    #camera-container {
+        width: 100%;
+        aspect-ratio: 4/5;
+        background: #000;
+        border-radius: 24px;
+        overflow: hidden;
+        position: relative;
+        margin-bottom: 20px;
+        border: 2px solid var(--primary);
+    }
+    #video {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transform: scaleX(-1); /* Mirror effect */
+    }
+    #canvas {
+        display: none;
+    }
+    .status-badge {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        padding: 6px 12px;
+        background: rgba(0,0,0,0.5);
+        backdrop-filter: blur(5px);
+        border-radius: 10px;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .pulse {
+        width: 8px;
+        height: 8px;
+        background: var(--accent);
+        border-radius: 50%;
+        box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+        0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(16, 185, 129, 0); }
+        100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <h2 style="font-size: 1.5rem;">Ambil Foto & Lokasi</h2>
+    <p style="color: var(--text-dim); font-size: 0.9rem;">Pastikan wajah terlihat jelas</p>
+</div>
+
+<div id="camera-container">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas"></canvas>
+    <div class="status-badge">
+        <div class="pulse"></div>
+        <span id="location-status">Mencari Lokasi...</span>
+    </div>
+</div>
+
+<div class="card" style="padding: 10px; margin-bottom: 30px;">
+    <div style="display: flex; gap: 10px;">
+        <button id="btn-masuk" class="btn btn-primary" style="flex: 1; background: var(--accent);">
+            <i class="fas fa-sign-in-alt"></i> Absen Masuk
+        </button>
+        <button id="btn-pulang" class="btn btn-primary" style="flex: 1; background: var(--danger);">
+            <i class="fas fa-sign-out-alt"></i> Absen Pulang
+        </button>
+    </div>
+</div>
+
+<script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const locationStatus = document.getElementById('location-status');
+    let currentLat = null;
+    let currentLng = null;
+
+    // 1. Setup Camera
+    async function initCamera() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ 
+                video: { facingMode: "user" }, 
+                audio: false 
+            });
+            video.srcObject = stream;
+        } catch (err) {
+            alert("Gagal mengakses kamera. Mohon izinkan akses kamera.");
+        }
+    }
+
+    // 2. Setup Location
+    function initLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.watchPosition(
+                (position) => {
+                    currentLat = position.coords.latitude;
+                    currentLng = position.coords.longitude;
+                    locationStatus.innerText = "Lokasi Terkunci";
+                    locationStatus.parentElement.style.background = "rgba(16, 185, 129, 0.3)";
+                },
+                (err) => {
+                    locationStatus.innerText = "Gagal Mendapatkan Lokasi";
+                    alert("Mohon nyalakan GPS dan izinkan akses lokasi.");
+                },
+                { enableHighAccuracy: true }
+            );
+        }
+    }
+
+    // 3. Capture and Send
+    async function submitAttendance(status) {
+        if (!currentLat || !currentLng) {
+            alert("Menunggu koordinat GPS...");
+            return;
+        }
+
+        // Draw video to canvas
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvas.getContext('2d').drawImage(video, 0, 0);
+        
+        const imageData = canvas.toDataURL('image/jpeg', 0.8);
+
+        const formData = new FormData();
+        formData.append('status', status);
+        formData.append('lat', currentLat);
+        formData.append('lng', currentLng);
+        formData.append('image', imageData);
+        formData.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+        try {
+            const response = await fetch("{% url 'attendance' %}", {
+                method: 'POST',
+                body: formData
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                showOverlay(result.message);
+            }
+        } catch (err) {
+            alert("Gagal mengirim data.");
+        }
+    }
+
+    document.getElementById('btn-masuk').onclick = () => submitAttendance('Masuk');
+    document.getElementById('btn-pulang').onclick = () => submitAttendance('Pulang');
+
+    initCamera();
+    initLocation();
+</script>
+{% endblock %}

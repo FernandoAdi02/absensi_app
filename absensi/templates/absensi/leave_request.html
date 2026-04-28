@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div style="margin-bottom: 25px;">
+    <h2 style="font-size: 1.5rem;">Pengajuan Cuti</h2>
+    <p style="color: var(--text-dim); font-size: 0.9rem;">Isi formulir untuk mengajukan cuti</p>
+</div>
+
+<form method="post" class="card">
+    {% csrf_token %}
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim);">Tanggal Mulai</label>
+        <input type="date" name="start_date" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white;" required>
+    </div>
+    <div style="margin-bottom: 20px;">
+        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim);">Tanggal Selesai</label>
+        <input type="date" name="end_date" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white;" required>
+    </div>
+    <div style="margin-bottom: 30px;">
+        <label style="display: block; margin-bottom: 8px; font-size: 0.9rem; color: var(--text-dim);">Alasan Cuti</label>
+        <textarea name="reason" rows="4" style="width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); background: rgba(15, 23, 42, 0.5); color: white;" placeholder="Berikan alasan singkat..." required></textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Kirim Pengajuan</button>
+</form>
+{% endblock %}

@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card" style="text-align: center; padding-top: 40px; padding-bottom: 40px;">
+    <div style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary); display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; border: 4px solid rgba(255,255,255,0.1);">
+        <i class="fas fa-user" style="font-size: 3rem;"></i>
+    </div>
+    <h2 style="font-size: 1.5rem;">{{ user.username }}</h2>
+    <p style="color: var(--text-dim);">{{ profile.jabatan|default:"Karyawan" }}</p>
+    
+    <div style="display: flex; gap: 15px; margin-top: 30px; justify-content: center;">
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; min-width: 100px;">
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px;">Hadir</p>
+            <p style="font-weight: 600; font-size: 1.1rem;">22 Hari</p>
+        </div>
+        <div style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 16px; min-width: 100px;">
+            <p style="font-size: 0.7rem; color: var(--text-dim); margin-bottom: 5px;">Sisa Cuti</p>
+            <p style="font-weight: 600; font-size: 1.1rem;">12 Hari</p>
+        </div>
+    </div>
+</div>
+
+<div class="card" style="padding: 0; overflow: hidden;">
+    <a href="{% url 'profile_detail' %}" style="display: flex; align-items: center; padding: 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <i class="fas fa-id-card" style="width: 30px; color: var(--primary);"></i>
+        <span>Detail Akun</span>
+        <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.8rem; color: var(--text-dim);"></i>
+    </a>
+    <a href="{% url 'change_password' %}" style="display: flex; align-items: center; padding: 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <i class="fas fa-lock" style="width: 30px; color: var(--primary);"></i>
+        <span>Ubah Password</span>
+        <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.8rem; color: var(--text-dim);"></i>
+    </a>
+    <a href="{% url 'notifications' %}" style="display: flex; align-items: center; padding: 20px; color: white; text-decoration: none; border-bottom: 1px solid rgba(255,255,255,0.05);">
+        <i class="fas fa-bell" style="width: 30px; color: var(--primary);"></i>
+        <span>Notifikasi</span>
+        <i class="fas fa-chevron-right" style="margin-left: auto; font-size: 0.8rem; color: var(--text-dim);"></i>
+    </a>
+    <a href="{% url 'logout' %}" style="width: 100%; display: flex; align-items: center; padding: 20px; color: var(--danger); background: none; border: none; cursor: pointer; text-align: left; font-size: 1rem; text-decoration: none;">
+        <i class="fas fa-sign-out-alt" style="width: 30px;"></i>
+        <span>Keluar</span>
+    </a>
+</div>
+{% endblock %}
